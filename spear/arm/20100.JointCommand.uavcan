@@ -1,0 +1,7 @@
+# Command for moving arm joint
+
+# ID of joint
+uint4 joint
+
+# Position to send to (in tenths of a degree)
+uint12 angle
