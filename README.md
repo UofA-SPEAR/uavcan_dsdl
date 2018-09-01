@@ -26,3 +26,13 @@ To keep things consistent, different data types will be grouped into the differe
         - 20101.JointStatus.uavcan
             - uint4 joint - ID of joint
             - uint12 angle - angle (in tenths of a degree)
+
+## Generating code ##
+
+### libuavcan ###
+
+Make sure python is installed on your system.
+Run 
+```
+libuavcan/libuavcan/dsdl_compiler/libuavcan_dsdlc uavcan_dsdl/spear -O/path/to/directory
+```
