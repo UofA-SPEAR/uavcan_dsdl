@@ -1,0 +1,9 @@
+#
+# Status message for drive motors
+#
+
+# ID of wheel
+uint3 wheel
+
+# Speed wheel is *currently* turning at (signed mm/s)
+int13 speed
