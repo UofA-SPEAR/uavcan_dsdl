@@ -1,0 +1,3 @@
+[submodule "uavcan_dsdl"]
+	path = uavcan_dsdl
+	url = https://github.com/UAVCAN/dsdl.git
