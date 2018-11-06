@@ -25,13 +25,13 @@
   */
 uint32_t spear_drive_DriveCommand_encode_internal(spear_drive_DriveCommand* source, void* msg_buf, uint32_t offset, uint8_t root_item)
 {
-    source->joint = CANARD_INTERNAL_SATURATE(source->joint, 15)
-    canardEncodeScalar(msg_buf, offset, 4, (void*)&source->joint); // 15
-    offset += 4;
+    source->wheel = CANARD_INTERNAL_SATURATE(source->wheel, 7)
+    canardEncodeScalar(msg_buf, offset, 3, (void*)&source->wheel); // 7
+    offset += 3;
 
-    source->angle = CANARD_INTERNAL_SATURATE(source->angle, 4095)
-    canardEncodeScalar(msg_buf, offset, 12, (void*)&source->angle); // 4095
-    offset += 12;
+    source->speed = CANARD_INTERNAL_SATURATE(source->speed, 4095)
+    canardEncodeScalar(msg_buf, offset, 13, (void*)&source->speed); // 4095
+    offset += 13;
 
     return offset;
 }
@@ -67,19 +67,19 @@ int32_t spear_drive_DriveCommand_decode_internal(const CanardRxTransfer* transfe
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 4, false, (void*)&dest->joint);
-    if (ret != 4)
+    ret = canardDecodeScalar(transfer, offset, 3, false, (void*)&dest->wheel);
+    if (ret != 3)
     {
         goto spear_drive_DriveCommand_error_exit;
     }
-    offset += 4;
+    offset += 3;
 
-    ret = canardDecodeScalar(transfer, offset, 12, false, (void*)&dest->angle);
-    if (ret != 12)
+    ret = canardDecodeScalar(transfer, offset, 13, true, (void*)&dest->speed);
+    if (ret != 13)
     {
         goto spear_drive_DriveCommand_error_exit;
     }
-    offset += 12;
+    offset += 13;
     return offset;
 
 spear_drive_DriveCommand_error_exit:
