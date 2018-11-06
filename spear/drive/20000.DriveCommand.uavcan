@@ -1,9 +1,9 @@
 #
-# Command to move arm joints
+# Command message for drive motors
 #
 
-# ID of joint
-uint4 joint
+# ID of wheel
+uint3 wheel
 
-# Angle to move to (unsigned tenths of a degree)
-uint12 angle
+# Speed to set wheel at (signed mm/s)
+int13 speed
