@@ -42,6 +42,8 @@ Maybe you disagree. Tell me.
 - REALLY IMPORTANT status updates
 - panic messages (will we ever implement these? who knows)
 
+Drive before arm.
+
 5 bits is 2^5 is 32 levels (0-31).
 
 Ranges:
