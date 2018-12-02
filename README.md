@@ -33,6 +33,6 @@ To keep things consistent, different data types will be grouped into the differe
 
 Make sure python is installed on your system.
 Run 
-```
-libuavcan/libuavcan/dsdl_compiler/libuavcan_dsdlc uavcan_dsdl/spear -O/path/to/directory
+```bash
+$ libuavcan/libuavcan/dsdl_compiler/libuavcan_dsdlc spear "-O${HOME}/uavcan_vendor_specific_types"
 ```
