@@ -5,9 +5,9 @@ bits of knowledge required to use them.
 
 _TODO:_
 
-- GPS message type
-- accel/magnetometer message type
-- RC message type
+- [ ] GPS message type
+- [ ] accel/magnetometer message type
+- [ ] RC message type
 
 ## Arm Messages ##
 
@@ -40,14 +40,14 @@ All nodes will publish NodeStatus messages at least once per second.
 If a node does not publish in two seconds, it can be considered offline.
 
 The science sensor board (w/ GPS, IMU, and servo outputs) will be node # 10.
-- This will publish GPS data on <GPS message type> on priority 10.
-- This will publish accel/magnetometer data on <insert data type> on priority 10.
+- This will publish GPS data on `<GPS message type>` on priority 10.
+- This will publish accel/magnetometer data on `<insert data type>` on priority 10.
 - This will listen to uavcan/equipment/actuator/Command.uavcan on priority 11.
     - Data type ID # 42
     - Actuators will be numbered 0-n for n servos on the board.
 
 The RC input board will be node # 11. 
-- This will publish RC input data on the <insert RC message type>, priority 15.
+- This will publish RC input data on the `<insert RC message type>`, priority 15.
 
 The battery input boards will be node IDs 40-45 (Comp. batteries 1 & 2, Drive batteries 1-4).
 - These will publish battery info using uavcan/equipment/power/1092.BatteryInfo.uavcan
