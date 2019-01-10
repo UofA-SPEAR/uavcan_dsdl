@@ -1,0 +1,6 @@
+## DSDL definition for PPM messages
+# By the spec, there can be no more than 8 channels
+
+uint8 num_channels
+
+uint8[<=8] data
