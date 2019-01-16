@@ -55,7 +55,7 @@ extern
 uint32_t spear_general_PpmMessage_encode_internal(spear_general_PpmMessage* source, void* msg_buf, uint32_t offset, uint8_t root_item);
 
 extern
-int32_t spear_general_PpmMessage_decode_internal(const CanardRxTransfer* transfer, uint16_t payload_len, spear_general_PpmMessage* dest, uint8_t** dyn_arr_buf, int32_t offset, uint8_t tao);
+int32_t spear_general_PpmMessage_decode_internal(const CanardRxTransfer* transfer, uint16_t payload_len, spear_general_PpmMessage* dest, uint8_t** dyn_arr_buf, int32_t offset);
 
 #ifdef __cplusplus
 } // extern "C"
