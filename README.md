@@ -32,6 +32,10 @@ NOTE: First letter of a message type must be capitalized. As well, only use char
         - 20101.JointStatus.uavcan
             - uint4 joint - ID of joint
             - uint12 angle - angle (in tenths of a degree)
+    - general
+        - 20200.PpmMessage.uavcan
+            - uint8 channel_num
+            - int32[<=8] channel_data
 
 ## Generating code ##
 
