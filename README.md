@@ -9,6 +9,12 @@ To keep things consistent, different data types will be grouped into the differe
 - Arm is 20100 - 20199
 - Science is 20200 - 20299
 
+Before merging with master, ALWAYS test using at least one dsdl compiler.
+
+## Naming
+
+NOTE: First letter of a message type must be capitalized. As well, only use characters. (a-z etc)
+
 ## Structure ##
 
 - spear
@@ -33,6 +39,17 @@ To keep things consistent, different data types will be grouped into the differe
 
 Make sure python is installed on your system.
 Run 
-```bash
-$ libuavcan/libuavcan/dsdl_compiler/libuavcan_dsdlc spear "-O${HOME}/uavcan_vendor_specific_types"
 ```
+bash $ libuavcan/libuavcan/dsdl_compiler/libuavcan_dsdlc spear "-O${HOME}/uavcan_vendor_specific_types"
+```
+
+### libcanard
+
+Make sure pyuavcan is installed
+
+Run
+
+```
+/path/to/libanard_dsdlc --output-dir libcanard_dsdlc_generated spear/ uavcan_dsdl/uavcan/
+```
+
