@@ -1,9 +1,0 @@
-#
-# Command message for drive motors
-#
-
-# ID of wheel
-uint3 wheel
-
-# Speed to set wheel at (signed mm/s)
-int13 speed
