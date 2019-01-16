@@ -2,13 +2,21 @@
 
 matrix:
     include:
-        - name: "Libuavcan DSDLC"
+        - name: "Libcanard DSDLC"
           language: python
           python: 2.7
           before_script:
               - pip install uavcan
           script:
               - libcanard/dsdl_compiler/libcanard_dsdlc --outdir libcanard_dsdlc_generated 
+                spear/ uavcan_dsdl/uavcan/
+        - name: "Libuavcan DSDLC"
+          language: python
+          python: 2.7
+          before_script:
+              - pip install uavcan
+          script:
+              - libuavcan/libuavcan/dsdl_compiler/libcanard_dsdlc --outdir libcanard_dsdlc_generated 
                 spear/ uavcan_dsdl/uavcan/
 
 notifications:
