@@ -50,6 +50,6 @@ Make sure pyuavcan is installed
 Run
 
 ```
-/path/to/libanard_dsdlc --output-dir libcanard_dsdlc_generated spear/ uavcan_dsdl/uavcan/
+/path/to/libanard_dsdlc --outdir libcanard_dsdlc_generated spear/ uavcan_dsdl/uavcan/
 ```
 

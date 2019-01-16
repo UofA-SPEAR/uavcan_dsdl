@@ -1,0 +1,11 @@
+# Configuration to check whether the DSDL definitions compile 
+
+matrix:
+    include:
+        - name: "Libuavcan DSDLC"
+          script:
+              - libcanard/dsdl_compiler/libcanard_dsdlc --outdir libcanard_dsdlc_generated 
+                spear/ uavcan_dsdl/uavcan/
+
+notifications:
+    email: false
