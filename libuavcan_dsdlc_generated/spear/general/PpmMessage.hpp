@@ -18,15 +18,15 @@
 # DSDL definitions for ppm inputs
 # No more than 8 channels by spec
 
-float16 channel_num
+int32[<=8] channel_data
 ******************************************************************************/
 
 /********************* DSDL signature source definition ***********************
 spear.general.PpmMessage
-saturated float16 channel_num
+saturated int32[<=8] channel_data
 ******************************************************************************/
 
-#undef channel_num
+#undef channel_data
 
 namespace spear
 {
@@ -45,28 +45,28 @@ struct UAVCAN_EXPORT PpmMessage_
 
     struct FieldTypes
     {
-        typedef ::uavcan::FloatSpec< 16, ::uavcan::CastModeSaturate > channel_num;
+        typedef ::uavcan::Array< ::uavcan::IntegerSpec< 32, ::uavcan::SignednessSigned, ::uavcan::CastModeSaturate >, ::uavcan::ArrayModeDynamic, 8 > channel_data;
     };
 
     enum
     {
         MinBitLen
-            = FieldTypes::channel_num::MinBitLen
+            = FieldTypes::channel_data::MinBitLen
     };
 
     enum
     {
         MaxBitLen
-            = FieldTypes::channel_num::MaxBitLen
+            = FieldTypes::channel_data::MaxBitLen
     };
 
     // Constants
 
     // Fields
-    typename ::uavcan::StorageType< typename FieldTypes::channel_num >::Type channel_num;
+    typename ::uavcan::StorageType< typename FieldTypes::channel_data >::Type channel_data;
 
     PpmMessage_()
-        : channel_num()
+        : channel_data()
     {
         ::uavcan::StaticAssert<_tmpl == 0>::check();  // Usage check
 
@@ -76,7 +76,7 @@ struct UAVCAN_EXPORT PpmMessage_
          * This check shall never be performed in user code because MaxBitLen value
          * actually depends on the nested types, thus it is not invariant.
          */
-        ::uavcan::StaticAssert<16 == MaxBitLen>::check();
+        ::uavcan::StaticAssert<260 == MaxBitLen>::check();
 #endif
     }
 
@@ -123,14 +123,14 @@ template <int _tmpl>
 bool PpmMessage_<_tmpl>::operator==(ParameterType rhs) const
 {
     return
-        channel_num == rhs.channel_num;
+        channel_data == rhs.channel_data;
 }
 
 template <int _tmpl>
 bool PpmMessage_<_tmpl>::isClose(ParameterType rhs) const
 {
     return
-        ::uavcan::areClose(channel_num, rhs.channel_num);
+        ::uavcan::areClose(channel_data, rhs.channel_data);
 }
 
 template <int _tmpl>
@@ -141,7 +141,7 @@ int PpmMessage_<_tmpl>::encode(ParameterType self, ::uavcan::ScalarCodec& codec,
     (void)codec;
     (void)tao_mode;
     int res = 1;
-    res = FieldTypes::channel_num::encode(self.channel_num, codec,  tao_mode);
+    res = FieldTypes::channel_data::encode(self.channel_data, codec,  tao_mode);
     return res;
 }
 
@@ -153,7 +153,7 @@ int PpmMessage_<_tmpl>::decode(ReferenceType self, ::uavcan::ScalarCodec& codec,
     (void)codec;
     (void)tao_mode;
     int res = 1;
-    res = FieldTypes::channel_num::decode(self.channel_num, codec,  tao_mode);
+    res = FieldTypes::channel_data::decode(self.channel_data, codec,  tao_mode);
     return res;
 }
 
@@ -163,9 +163,9 @@ int PpmMessage_<_tmpl>::decode(ReferenceType self, ::uavcan::ScalarCodec& codec,
 template <int _tmpl>
 ::uavcan::DataTypeSignature PpmMessage_<_tmpl>::getDataTypeSignature()
 {
-    ::uavcan::DataTypeSignature signature(0x44D242F6A3B4C70BULL);
+    ::uavcan::DataTypeSignature signature(0x7C3F4330C6EBEBC0ULL);
 
-    FieldTypes::channel_num::extendDataTypeSignature(signature);
+    FieldTypes::channel_data::extendDataTypeSignature(signature);
 
     return signature;
 }
@@ -217,8 +217,8 @@ void YamlStreamer< ::spear::general::PpmMessage >::stream(Stream& s, ::spear::ge
             s << "  ";
         }
     }
-    s << "channel_num: ";
-    YamlStreamer< ::spear::general::PpmMessage::FieldTypes::channel_num >::stream(s, obj.channel_num, level + 1);
+    s << "channel_data: ";
+    YamlStreamer< ::spear::general::PpmMessage::FieldTypes::channel_data >::stream(s, obj.channel_data, level + 1);
 }
 
 }

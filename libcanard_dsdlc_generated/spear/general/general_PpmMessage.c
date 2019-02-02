@@ -35,20 +35,25 @@ uint32_t spear_general_PpmMessage_encode_internal(spear_general_PpmMessage* sour
   uint32_t offset,
   uint8_t CANARD_MAYBE_UNUSED(root_item))
 {
-#ifndef CANARD_USE_FLOAT16_CAST
-    uint16_t tmp_float = 0;
-#else
-    CANARD_USE_FLOAT16_CAST tmp_float = 0;
-#endif
+    uint32_t c = 0;
 
-    // float16 special handling
-#ifndef CANARD_USE_FLOAT16_CAST
-    tmp_float = canardConvertNativeFloatToFloat16(source->channel_num);
-#else
-    tmp_float = (CANARD_USE_FLOAT16_CAST)source->channel_num;
-#endif
-    canardEncodeScalar(msg_buf, offset, 16, (void*)&tmp_float); // 32767
-    offset += 16;
+    // Dynamic Array (channel_data)
+    if (! root_item)
+    {
+        // - Add array length
+        canardEncodeScalar(msg_buf, offset, 4, (void*)&source->channel_data.len);
+        offset += 4;
+    }
+
+    // - Add array items
+    for (c = 0; c < source->channel_data.len; c++)
+    {
+        canardEncodeScalar(msg_buf,
+                           offset,
+                           32,
+                           (void*)(source->channel_data.data + c));// 2147483647
+        offset += 32;
+    }
 
     return offset;
 }
@@ -87,25 +92,53 @@ int32_t spear_general_PpmMessage_decode_internal(
   int32_t offset)
 {
     int32_t ret = 0;
-#ifndef CANARD_USE_FLOAT16_CAST
-    uint16_t tmp_float = 0;
-#else
-    CANARD_USE_FLOAT16_CAST tmp_float = 0;
-#endif
+    uint32_t c = 0;
 
-    // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
-
-    if (ret != 16)
+    // Dynamic Array (channel_data)
+    //  - Last item in struct & Root item & (Array Size > 8 bit), tail array optimization
+    if (payload_len)
     {
-        goto spear_general_PpmMessage_error_exit;
+        //  - Calculate Array length from MSG length
+        dest->channel_data.len = ((payload_len * 8) - offset ) / 32; // 32 bit array item size
     }
-#ifndef CANARD_USE_FLOAT16_CAST
-    dest->channel_num = canardConvertFloat16ToNativeFloat(tmp_float);
-#else
-    dest->channel_num = (float)tmp_float;
-#endif
-    offset += 16;
+    else
+    {
+        // - Array length 4 bits
+        ret = canardDecodeScalar(transfer,
+                                 offset,
+                                 4,
+                                 false,
+                                 (void*)&dest->channel_data.len); // 2147483647
+        if (ret != 4)
+        {
+            goto spear_general_PpmMessage_error_exit;
+        }
+        offset += 4;
+    }
+
+    //  - Get Array
+    if (dyn_arr_buf)
+    {
+        dest->channel_data.data = (int32_t*)*dyn_arr_buf;
+    }
+
+    for (c = 0; c < dest->channel_data.len; c++)
+    {
+        if (dyn_arr_buf)
+        {
+            ret = canardDecodeScalar(transfer,
+                                     offset,
+                                     32,
+                                     true,
+                                     (void*)*dyn_arr_buf); // 2147483647
+            if (ret != 32)
+            {
+                goto spear_general_PpmMessage_error_exit;
+            }
+            *dyn_arr_buf = (uint8_t*)(((int32_t*)*dyn_arr_buf) + 1);
+        }
+        offset += 32;
+    }
     return offset;
 
 spear_general_PpmMessage_error_exit:
