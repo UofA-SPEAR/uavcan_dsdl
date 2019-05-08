@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -58,7 +58,7 @@ int32_t uavcan_protocol_GetTransportStatsRequest_decode(const CanardRxTransfer* 
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_GetTransportStatsResponse_encode_internal(uavcan_protocol_GetTransportStatsResponse* source,
   void* msg_buf,
@@ -90,7 +90,7 @@ uint32_t uavcan_protocol_GetTransportStatsResponse_encode_internal(uavcan_protoc
     // - Add array items
     for (c = 0; c < source->can_iface_stats.len; c++)
     {
-        offset += uavcan_protocol_CANIfaceStats_encode_internal((void*)&source->can_iface_stats.data[c], msg_buf, offset, 0);
+        offset = uavcan_protocol_CANIfaceStats_encode_internal((void*)&source->can_iface_stats.data[c], msg_buf, offset, 0);
     }
 
     return offset;
@@ -120,7 +120,7 @@ uint32_t uavcan_protocol_GetTransportStatsResponse_encode(uavcan_protocol_GetTra
   *                     uavcan_protocol_GetTransportStatsResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_GetTransportStatsResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -132,21 +132,21 @@ int32_t uavcan_protocol_GetTransportStatsResponse_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->transfers_tx);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->transfers_tx);
     if (ret != 48)
     {
         goto uavcan_protocol_GetTransportStatsResponse_error_exit;
     }
     offset += 48;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->transfers_rx);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->transfers_rx);
     if (ret != 48)
     {
         goto uavcan_protocol_GetTransportStatsResponse_error_exit;
     }
     offset += 48;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->transfer_errors);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->transfer_errors);
     if (ret != 48)
     {
         goto uavcan_protocol_GetTransportStatsResponse_error_exit;
@@ -164,7 +164,7 @@ int32_t uavcan_protocol_GetTransportStatsResponse_decode_internal(
     {
         // - Array length 2 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  2,
                                  false,
                                  (void*)&dest->can_iface_stats.len); // 0
@@ -183,7 +183,7 @@ int32_t uavcan_protocol_GetTransportStatsResponse_decode_internal(
 
     for (c = 0; c < dest->can_iface_stats.len; c++)
     {
-        offset += uavcan_protocol_CANIfaceStats_decode_internal(transfer,
+        offset = uavcan_protocol_CANIfaceStats_decode_internal(transfer,
                                                 0,
                                                 (void*)&dest->can_iface_stats.data[c],
                                                 dyn_arr_buf,

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_ahrs_Solution_encode_internal(uavcan_equipment_ahrs_Solution* source,
   void* msg_buf,
@@ -141,7 +141,7 @@ uint32_t uavcan_equipment_ahrs_Solution_encode(uavcan_equipment_ahrs_Solution* s
   *                     uavcan_equipment_ahrs_Solution dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_ahrs_Solution_decode_internal(
   const CanardRxTransfer* transfer,
@@ -154,7 +154,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     uint32_t c = 0;
 
     // Compound
-    offset = uavcan_Timestamp_decode_internal(transfer, 0, &dest->timestamp, dyn_arr_buf, offset);
+    offset = uavcan_Timestamp_decode_internal(transfer, payload_len, &dest->timestamp, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -164,7 +164,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     // Static array (orientation_xyzw)
     for (c = 0; c < 4; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->orientation_xyzw + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->orientation_xyzw + c));
         if (ret != 16)
         {
             goto uavcan_equipment_ahrs_Solution_error_exit;
@@ -178,7 +178,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     // Dynamic Array (orientation_covariance)
     //  - Array length, not last item 4 bits
     ret = canardDecodeScalar(transfer,
-                             offset,
+                             (uint32_t)offset,
                              4,
                              false,
                              (void*)&dest->orientation_covariance.len); // 32767
@@ -199,7 +199,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767
@@ -215,7 +215,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     // Static array (angular_velocity)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->angular_velocity + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->angular_velocity + c));
         if (ret != 16)
         {
             goto uavcan_equipment_ahrs_Solution_error_exit;
@@ -229,7 +229,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     // Dynamic Array (angular_velocity_covariance)
     //  - Array length, not last item 4 bits
     ret = canardDecodeScalar(transfer,
-                             offset,
+                             (uint32_t)offset,
                              4,
                              false,
                              (void*)&dest->angular_velocity_covariance.len); // 32767
@@ -250,7 +250,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767
@@ -266,7 +266,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     // Static array (linear_acceleration)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->linear_acceleration + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->linear_acceleration + c));
         if (ret != 16)
         {
             goto uavcan_equipment_ahrs_Solution_error_exit;
@@ -285,7 +285,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
     {
         // - Array length 4 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  4,
                                  false,
                                  (void*)&dest->linear_acceleration_covariance.len); // 32767
@@ -307,7 +307,7 @@ int32_t uavcan_equipment_ahrs_Solution_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767

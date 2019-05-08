@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t spear_general_PpmMessage_encode_internal(spear_general_PpmMessage* source,
   void* msg_buf,
@@ -82,7 +82,7 @@ uint32_t spear_general_PpmMessage_encode(spear_general_PpmMessage* source, void*
   *                     spear_general_PpmMessage dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t spear_general_PpmMessage_decode_internal(
   const CanardRxTransfer* transfer,
@@ -105,7 +105,7 @@ int32_t spear_general_PpmMessage_decode_internal(
     {
         // - Array length 4 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  4,
                                  false,
                                  (void*)&dest->channel_data.len); // 2147483647
@@ -127,7 +127,7 @@ int32_t spear_general_PpmMessage_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      32,
                                      true,
                                      (void*)*dyn_arr_buf); // 2147483647

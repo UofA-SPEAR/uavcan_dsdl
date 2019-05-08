@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_Panic_encode_internal(uavcan_protocol_Panic* source,
   void* msg_buf,
@@ -82,7 +82,7 @@ uint32_t uavcan_protocol_Panic_encode(uavcan_protocol_Panic* source, void* msg_b
   *                     uavcan_protocol_Panic dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_Panic_decode_internal(
   const CanardRxTransfer* transfer,
@@ -105,7 +105,7 @@ int32_t uavcan_protocol_Panic_decode_internal(
     {
         // - Array length 3 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  3,
                                  false,
                                  (void*)&dest->reason_text.len); // 255
@@ -127,7 +127,7 @@ int32_t uavcan_protocol_Panic_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

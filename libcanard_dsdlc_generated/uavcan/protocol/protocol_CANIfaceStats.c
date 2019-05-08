@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_CANIfaceStats_encode_internal(uavcan_protocol_CANIfaceStats* source,
   void* msg_buf,
@@ -74,7 +74,7 @@ uint32_t uavcan_protocol_CANIfaceStats_encode(uavcan_protocol_CANIfaceStats* sou
   *                     uavcan_protocol_CANIfaceStats dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_CANIfaceStats_decode_internal(
   const CanardRxTransfer* transfer,
@@ -85,21 +85,21 @@ int32_t uavcan_protocol_CANIfaceStats_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->frames_tx);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->frames_tx);
     if (ret != 48)
     {
         goto uavcan_protocol_CANIfaceStats_error_exit;
     }
     offset += 48;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->frames_rx);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->frames_rx);
     if (ret != 48)
     {
         goto uavcan_protocol_CANIfaceStats_error_exit;
     }
     offset += 48;
 
-    ret = canardDecodeScalar(transfer, offset, 48, false, (void*)&dest->errors);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, false, (void*)&dest->errors);
     if (ret != 48)
     {
         goto uavcan_protocol_CANIfaceStats_error_exit;

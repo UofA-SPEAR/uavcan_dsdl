@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_ice_reciprocating_Status_encode_internal(uavcan_equipment_ice_reciprocating_Status* source,
   void* msg_buf,
@@ -160,7 +160,7 @@ uint32_t uavcan_equipment_ice_reciprocating_Status_encode_internal(uavcan_equipm
     // - Add array items
     for (c = 0; c < source->cylinder_status.len; c++)
     {
-        offset += uavcan_equipment_ice_reciprocating_CylinderStatus_encode_internal((void*)&source->cylinder_status.data[c], msg_buf, offset, 0);
+        offset = uavcan_equipment_ice_reciprocating_CylinderStatus_encode_internal((void*)&source->cylinder_status.data[c], msg_buf, offset, 0);
     }
 
     return offset;
@@ -190,7 +190,7 @@ uint32_t uavcan_equipment_ice_reciprocating_Status_encode(uavcan_equipment_ice_r
   *                     uavcan_equipment_ice_reciprocating_Status dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
   const CanardRxTransfer* transfer,
@@ -207,14 +207,14 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     CANARD_USE_FLOAT16_CAST tmp_float = 0;
 #endif
 
-    ret = canardDecodeScalar(transfer, offset, 2, false, (void*)&dest->state);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 2, false, (void*)&dest->state);
     if (ret != 2)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 2;
 
-    ret = canardDecodeScalar(transfer, offset, 30, false, (void*)&dest->flags);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 30, false, (void*)&dest->flags);
     if (ret != 30)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
@@ -224,14 +224,14 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     // Void16
     offset += 16;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->engine_load_percent);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->engine_load_percent);
     if (ret != 7)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 7;
 
-    ret = canardDecodeScalar(transfer, offset, 17, false, (void*)&dest->engine_speed_rpm);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 17, false, (void*)&dest->engine_speed_rpm);
     if (ret != 17)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
@@ -239,7 +239,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 17;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -253,7 +253,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -267,7 +267,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -281,7 +281,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -295,7 +295,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -309,7 +309,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -323,7 +323,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -337,7 +337,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -350,35 +350,35 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
 #endif
     offset += 16;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->fuel_consumption_rate_cm3pm);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->fuel_consumption_rate_cm3pm);
     if (ret != 32)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->estimated_consumed_fuel_volume_cm3);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->estimated_consumed_fuel_volume_cm3);
     if (ret != 32)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->throttle_position_percent);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->throttle_position_percent);
     if (ret != 7)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 7;
 
-    ret = canardDecodeScalar(transfer, offset, 6, false, (void*)&dest->ecu_index);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 6, false, (void*)&dest->ecu_index);
     if (ret != 6)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
     }
     offset += 6;
 
-    ret = canardDecodeScalar(transfer, offset, 3, false, (void*)&dest->spark_plug_usage);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 3, false, (void*)&dest->spark_plug_usage);
     if (ret != 3)
     {
         goto uavcan_equipment_ice_reciprocating_Status_error_exit;
@@ -396,7 +396,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
     {
         // - Array length 5 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  5,
                                  false,
                                  (void*)&dest->cylinder_status.len); // 0
@@ -415,7 +415,7 @@ int32_t uavcan_equipment_ice_reciprocating_Status_decode_internal(
 
     for (c = 0; c < dest->cylinder_status.len; c++)
     {
-        offset += uavcan_equipment_ice_reciprocating_CylinderStatus_decode_internal(transfer,
+        offset = uavcan_equipment_ice_reciprocating_CylinderStatus_decode_internal(transfer,
                                                 0,
                                                 (void*)&dest->cylinder_status.data[c],
                                                 dyn_arr_buf,

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_indication_RGB565_encode_internal(uavcan_equipment_indication_RGB565* source,
   void* msg_buf,
@@ -74,7 +74,7 @@ uint32_t uavcan_equipment_indication_RGB565_encode(uavcan_equipment_indication_R
   *                     uavcan_equipment_indication_RGB565 dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_indication_RGB565_decode_internal(
   const CanardRxTransfer* transfer,
@@ -85,21 +85,21 @@ int32_t uavcan_equipment_indication_RGB565_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 5, false, (void*)&dest->red);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 5, false, (void*)&dest->red);
     if (ret != 5)
     {
         goto uavcan_equipment_indication_RGB565_error_exit;
     }
     offset += 5;
 
-    ret = canardDecodeScalar(transfer, offset, 6, false, (void*)&dest->green);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 6, false, (void*)&dest->green);
     if (ret != 6)
     {
         goto uavcan_equipment_indication_RGB565_error_exit;
     }
     offset += 6;
 
-    ret = canardDecodeScalar(transfer, offset, 5, false, (void*)&dest->blue);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 5, false, (void*)&dest->blue);
     if (ret != 5)
     {
         goto uavcan_equipment_indication_RGB565_error_exit;

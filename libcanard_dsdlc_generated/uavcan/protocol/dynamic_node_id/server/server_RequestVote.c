@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_encode_internal(uavcan_protocol_dynamic_node_id_server_RequestVoteRequest* source,
   void* msg_buf,
@@ -71,7 +71,7 @@ uint32_t uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_encode(uavcan
   *                     uavcan_protocol_dynamic_node_id_server_RequestVoteRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -82,21 +82,21 @@ int32_t uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_decode_interna
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->last_log_term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->last_log_term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->last_log_index);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->last_log_index);
     if (ret != 8)
     {
         goto uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_error_exit;
@@ -150,7 +150,7 @@ int32_t uavcan_protocol_dynamic_node_id_server_RequestVoteRequest_decode(const C
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_encode_internal(uavcan_protocol_dynamic_node_id_server_RequestVoteResponse* source,
   void* msg_buf,
@@ -160,8 +160,8 @@ uint32_t uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_encode_inter
     canardEncodeScalar(msg_buf, offset, 32, (void*)&source->term); // 4294967295
     offset += 32;
 
-    source->vote_granted = CANARD_INTERNAL_SATURATE_UNSIGNED(source->vote_granted, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->vote_granted); // 0
+    source->vote_granted = CANARD_INTERNAL_SATURATE_UNSIGNED(source->vote_granted, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->vote_granted); // 1
     offset += 1;
 
     return offset;
@@ -191,7 +191,7 @@ uint32_t uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_encode(uavca
   *                     uavcan_protocol_dynamic_node_id_server_RequestVoteResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -202,14 +202,14 @@ int32_t uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_decode_intern
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->vote_granted);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->vote_granted);
     if (ret != 1)
     {
         goto uavcan_protocol_dynamic_node_id_server_RequestVoteResponse_error_exit;

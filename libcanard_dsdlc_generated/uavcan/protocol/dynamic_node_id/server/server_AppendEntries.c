@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_encode_internal(uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest* source,
   void* msg_buf,
@@ -60,7 +60,7 @@ uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_encode_inte
     // - Add array items
     for (c = 0; c < source->entries.len; c++)
     {
-        offset += uavcan_protocol_dynamic_node_id_server_Entry_encode_internal((void*)&source->entries.data[c], msg_buf, offset, 0);
+        offset = uavcan_protocol_dynamic_node_id_server_Entry_encode_internal((void*)&source->entries.data[c], msg_buf, offset, 0);
     }
 
     return offset;
@@ -90,7 +90,7 @@ uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_encode(uavc
   *                     uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -102,28 +102,28 @@ int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_decode_inter
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->prev_log_term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->prev_log_term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->prev_log_index);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->prev_log_index);
     if (ret != 8)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->leader_commit);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->leader_commit);
     if (ret != 8)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_error_exit;
@@ -141,7 +141,7 @@ int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_decode_inter
     {
         // - Array length 1 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  1,
                                  false,
                                  (void*)&dest->entries.len); // 0
@@ -160,7 +160,7 @@ int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_decode_inter
 
     for (c = 0; c < dest->entries.len; c++)
     {
-        offset += uavcan_protocol_dynamic_node_id_server_Entry_decode_internal(transfer,
+        offset = uavcan_protocol_dynamic_node_id_server_Entry_decode_internal(transfer,
                                                 0,
                                                 (void*)&dest->entries.data[c],
                                                 dyn_arr_buf,
@@ -214,7 +214,7 @@ int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesRequest_decode(const
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_encode_internal(uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse* source,
   void* msg_buf,
@@ -224,8 +224,8 @@ uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_encode_int
     canardEncodeScalar(msg_buf, offset, 32, (void*)&source->term); // 4294967295
     offset += 32;
 
-    source->success = CANARD_INTERNAL_SATURATE_UNSIGNED(source->success, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->success); // 0
+    source->success = CANARD_INTERNAL_SATURATE_UNSIGNED(source->success, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->success); // 1
     offset += 1;
 
     return offset;
@@ -255,7 +255,7 @@ uint32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_encode(uav
   *                     uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -266,14 +266,14 @@ int32_t uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_decode_inte
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->term);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->term);
     if (ret != 32)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->success);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->success);
     if (ret != 1)
     {
         goto uavcan_protocol_dynamic_node_id_server_AppendEntriesResponse_error_exit;

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_encode_internal(uavcan_equipment_power_PrimaryPowerSupplyStatus* source,
   void* msg_buf,
@@ -58,8 +58,8 @@ uint32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_encode_internal(uavcan_
 #endif
     canardEncodeScalar(msg_buf, offset, 16, (void*)&tmp_float); // 32767
     offset += 16;
-    source->external_power_available = CANARD_INTERNAL_SATURATE_UNSIGNED(source->external_power_available, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->external_power_available); // 0
+    source->external_power_available = CANARD_INTERNAL_SATURATE_UNSIGNED(source->external_power_available, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->external_power_available); // 1
     offset += 1;
 
     source->remaining_energy_pct = CANARD_INTERNAL_SATURATE_UNSIGNED(source->remaining_energy_pct, 127)
@@ -97,7 +97,7 @@ uint32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_encode(uavcan_equipment
   *                     uavcan_equipment_power_PrimaryPowerSupplyStatus dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_decode_internal(
   const CanardRxTransfer* transfer,
@@ -114,7 +114,7 @@ int32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_decode_internal(
 #endif
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -128,7 +128,7 @@ int32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -141,21 +141,21 @@ int32_t uavcan_equipment_power_PrimaryPowerSupplyStatus_decode_internal(
 #endif
     offset += 16;
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->external_power_available);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->external_power_available);
     if (ret != 1)
     {
         goto uavcan_equipment_power_PrimaryPowerSupplyStatus_error_exit;
     }
     offset += 1;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->remaining_energy_pct);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->remaining_energy_pct);
     if (ret != 7)
     {
         goto uavcan_equipment_power_PrimaryPowerSupplyStatus_error_exit;
     }
     offset += 7;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->remaining_energy_pct_stdev);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->remaining_energy_pct_stdev);
     if (ret != 7)
     {
         goto uavcan_equipment_power_PrimaryPowerSupplyStatus_error_exit;

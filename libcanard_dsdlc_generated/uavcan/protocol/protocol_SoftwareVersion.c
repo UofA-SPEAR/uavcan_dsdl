@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_SoftwareVersion_encode_internal(uavcan_protocol_SoftwareVersion* source,
   void* msg_buf,
@@ -77,7 +77,7 @@ uint32_t uavcan_protocol_SoftwareVersion_encode(uavcan_protocol_SoftwareVersion*
   *                     uavcan_protocol_SoftwareVersion dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_SoftwareVersion_decode_internal(
   const CanardRxTransfer* transfer,
@@ -88,35 +88,35 @@ int32_t uavcan_protocol_SoftwareVersion_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->major);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->major);
     if (ret != 8)
     {
         goto uavcan_protocol_SoftwareVersion_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->minor);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->minor);
     if (ret != 8)
     {
         goto uavcan_protocol_SoftwareVersion_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->optional_field_flags);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->optional_field_flags);
     if (ret != 8)
     {
         goto uavcan_protocol_SoftwareVersion_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->vcs_commit);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->vcs_commit);
     if (ret != 32)
     {
         goto uavcan_protocol_SoftwareVersion_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 64, false, (void*)&dest->image_crc);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 64, false, (void*)&dest->image_crc);
     if (ret != 64)
     {
         goto uavcan_protocol_SoftwareVersion_error_exit;

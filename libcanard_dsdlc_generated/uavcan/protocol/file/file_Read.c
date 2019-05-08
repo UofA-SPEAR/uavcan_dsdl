@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_file_ReadRequest_encode_internal(uavcan_protocol_file_ReadRequest* source,
   void* msg_buf,
@@ -40,7 +40,7 @@ uint32_t uavcan_protocol_file_ReadRequest_encode_internal(uavcan_protocol_file_R
     offset += 40;
 
     // Compound
-    offset = uavcan_protocol_file_Path_encode_internal(&source->path, msg_buf, offset, 0);
+    offset = uavcan_protocol_file_Path_encode_internal(&source->path, msg_buf, offset, root_item);
 
     return offset;
 }
@@ -69,7 +69,7 @@ uint32_t uavcan_protocol_file_ReadRequest_encode(uavcan_protocol_file_ReadReques
   *                     uavcan_protocol_file_ReadRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_file_ReadRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -80,7 +80,7 @@ int32_t uavcan_protocol_file_ReadRequest_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 40, false, (void*)&dest->offset);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 40, false, (void*)&dest->offset);
     if (ret != 40)
     {
         goto uavcan_protocol_file_ReadRequest_error_exit;
@@ -88,7 +88,7 @@ int32_t uavcan_protocol_file_ReadRequest_decode_internal(
     offset += 40;
 
     // Compound
-    offset = uavcan_protocol_file_Path_decode_internal(transfer, 0, &dest->path, dyn_arr_buf, offset);
+    offset = uavcan_protocol_file_Path_decode_internal(transfer, payload_len, &dest->path, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -142,7 +142,7 @@ int32_t uavcan_protocol_file_ReadRequest_decode(const CanardRxTransfer* transfer
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_file_ReadResponse_encode_internal(uavcan_protocol_file_ReadResponse* source,
   void* msg_buf,
@@ -199,7 +199,7 @@ uint32_t uavcan_protocol_file_ReadResponse_encode(uavcan_protocol_file_ReadRespo
   *                     uavcan_protocol_file_ReadResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_file_ReadResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -212,7 +212,7 @@ int32_t uavcan_protocol_file_ReadResponse_decode_internal(
     uint32_t c = 0;
 
     // Compound
-    offset = uavcan_protocol_file_Error_decode_internal(transfer, 0, &dest->error, dyn_arr_buf, offset);
+    offset = uavcan_protocol_file_Error_decode_internal(transfer, payload_len, &dest->error, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -230,7 +230,7 @@ int32_t uavcan_protocol_file_ReadResponse_decode_internal(
     {
         // - Array length 9 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  9,
                                  false,
                                  (void*)&dest->data.len); // 255
@@ -252,7 +252,7 @@ int32_t uavcan_protocol_file_ReadResponse_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

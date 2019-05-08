@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_AccessCommandShellRequest_encode_internal(uavcan_protocol_AccessCommandShellRequest* source,
   void* msg_buf,
@@ -85,7 +85,7 @@ uint32_t uavcan_protocol_AccessCommandShellRequest_encode(uavcan_protocol_Access
   *                     uavcan_protocol_AccessCommandShellRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_AccessCommandShellRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -97,7 +97,7 @@ int32_t uavcan_protocol_AccessCommandShellRequest_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->flags);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->flags);
     if (ret != 8)
     {
         goto uavcan_protocol_AccessCommandShellRequest_error_exit;
@@ -115,7 +115,7 @@ int32_t uavcan_protocol_AccessCommandShellRequest_decode_internal(
     {
         // - Array length 8 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  8,
                                  false,
                                  (void*)&dest->input.len); // 255
@@ -137,7 +137,7 @@ int32_t uavcan_protocol_AccessCommandShellRequest_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255
@@ -197,7 +197,7 @@ int32_t uavcan_protocol_AccessCommandShellRequest_decode(const CanardRxTransfer*
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_AccessCommandShellResponse_encode_internal(uavcan_protocol_AccessCommandShellResponse* source,
   void* msg_buf,
@@ -257,7 +257,7 @@ uint32_t uavcan_protocol_AccessCommandShellResponse_encode(uavcan_protocol_Acces
   *                     uavcan_protocol_AccessCommandShellResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_AccessCommandShellResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -269,14 +269,14 @@ int32_t uavcan_protocol_AccessCommandShellResponse_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 32, true, (void*)&dest->last_exit_status);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, true, (void*)&dest->last_exit_status);
     if (ret != 32)
     {
         goto uavcan_protocol_AccessCommandShellResponse_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->flags);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->flags);
     if (ret != 8)
     {
         goto uavcan_protocol_AccessCommandShellResponse_error_exit;
@@ -294,7 +294,7 @@ int32_t uavcan_protocol_AccessCommandShellResponse_decode_internal(
     {
         // - Array length 9 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  9,
                                  false,
                                  (void*)&dest->output.len); // 255
@@ -316,7 +316,7 @@ int32_t uavcan_protocol_AccessCommandShellResponse_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

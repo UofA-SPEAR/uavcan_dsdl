@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_indication_SingleLightCommand_encode_internal(uavcan_equipment_indication_SingleLightCommand* source,
   void* msg_buf,
@@ -39,7 +39,7 @@ uint32_t uavcan_equipment_indication_SingleLightCommand_encode_internal(uavcan_e
     offset += 8;
 
     // Compound
-    offset = uavcan_equipment_indication_RGB565_encode_internal(&source->color, msg_buf, offset, 0);
+    offset = uavcan_equipment_indication_RGB565_encode_internal(&source->color, msg_buf, offset, root_item);
 
     return offset;
 }
@@ -68,7 +68,7 @@ uint32_t uavcan_equipment_indication_SingleLightCommand_encode(uavcan_equipment_
   *                     uavcan_equipment_indication_SingleLightCommand dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_indication_SingleLightCommand_decode_internal(
   const CanardRxTransfer* transfer,
@@ -79,7 +79,7 @@ int32_t uavcan_equipment_indication_SingleLightCommand_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->light_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->light_id);
     if (ret != 8)
     {
         goto uavcan_equipment_indication_SingleLightCommand_error_exit;
@@ -87,7 +87,7 @@ int32_t uavcan_equipment_indication_SingleLightCommand_decode_internal(
     offset += 8;
 
     // Compound
-    offset = uavcan_equipment_indication_RGB565_decode_internal(transfer, 0, &dest->color, dyn_arr_buf, offset);
+    offset = uavcan_equipment_indication_RGB565_decode_internal(transfer, payload_len, &dest->color, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;

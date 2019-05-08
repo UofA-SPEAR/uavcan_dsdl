@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_ahrs_RawIMU_encode_internal(uavcan_equipment_ahrs_RawIMU* source,
   void* msg_buf,
@@ -115,7 +115,7 @@ uint32_t uavcan_equipment_ahrs_RawIMU_encode(uavcan_equipment_ahrs_RawIMU* sourc
   *                     uavcan_equipment_ahrs_RawIMU dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
   const CanardRxTransfer* transfer,
@@ -128,14 +128,14 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     uint32_t c = 0;
 
     // Compound
-    offset = uavcan_Timestamp_decode_internal(transfer, 0, &dest->timestamp, dyn_arr_buf, offset);
+    offset = uavcan_Timestamp_decode_internal(transfer, payload_len, &dest->timestamp, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
         goto uavcan_equipment_ahrs_RawIMU_error_exit;
     }
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->integration_interval);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->integration_interval);
     if (ret != 32)
     {
         goto uavcan_equipment_ahrs_RawIMU_error_exit;
@@ -145,7 +145,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     // Static array (rate_gyro_latest)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->rate_gyro_latest + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->rate_gyro_latest + c));
         if (ret != 16)
         {
             goto uavcan_equipment_ahrs_RawIMU_error_exit;
@@ -156,7 +156,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     // Static array (rate_gyro_integral)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->rate_gyro_integral + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->rate_gyro_integral + c));
         if (ret != 32)
         {
             goto uavcan_equipment_ahrs_RawIMU_error_exit;
@@ -167,7 +167,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     // Static array (accelerometer_latest)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->accelerometer_latest + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->accelerometer_latest + c));
         if (ret != 16)
         {
             goto uavcan_equipment_ahrs_RawIMU_error_exit;
@@ -178,7 +178,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     // Static array (accelerometer_integral)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->accelerometer_integral + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->accelerometer_integral + c));
         if (ret != 32)
         {
             goto uavcan_equipment_ahrs_RawIMU_error_exit;
@@ -197,7 +197,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
     {
         // - Array length 6 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  6,
                                  false,
                                  (void*)&dest->covariance.len); // 32767
@@ -219,7 +219,7 @@ int32_t uavcan_equipment_ahrs_RawIMU_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767

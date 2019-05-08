@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_camera_gimbal_Status_encode_internal(uavcan_equipment_camera_gimbal_Status* source,
   void* msg_buf,
@@ -94,7 +94,7 @@ uint32_t uavcan_equipment_camera_gimbal_Status_encode(uavcan_equipment_camera_gi
   *                     uavcan_equipment_camera_gimbal_Status dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
   const CanardRxTransfer* transfer,
@@ -106,7 +106,7 @@ int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->gimbal_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->gimbal_id);
     if (ret != 8)
     {
         goto uavcan_equipment_camera_gimbal_Status_error_exit;
@@ -114,7 +114,7 @@ int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
     offset += 8;
 
     // Compound
-    offset = uavcan_equipment_camera_gimbal_Mode_decode_internal(transfer, 0, &dest->mode, dyn_arr_buf, offset);
+    offset = uavcan_equipment_camera_gimbal_Mode_decode_internal(transfer, payload_len, &dest->mode, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -124,7 +124,7 @@ int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
     // Static array (camera_orientation_in_body_frame_xyzw)
     for (c = 0; c < 4; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->camera_orientation_in_body_frame_xyzw + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->camera_orientation_in_body_frame_xyzw + c));
         if (ret != 16)
         {
             goto uavcan_equipment_camera_gimbal_Status_error_exit;
@@ -143,7 +143,7 @@ int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
     {
         // - Array length 4 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  4,
                                  false,
                                  (void*)&dest->camera_orientation_in_body_frame_covariance.len); // 32767
@@ -165,7 +165,7 @@ int32_t uavcan_equipment_camera_gimbal_Status_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767
