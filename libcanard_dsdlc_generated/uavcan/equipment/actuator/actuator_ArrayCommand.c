@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_actuator_ArrayCommand_encode_internal(uavcan_equipment_actuator_ArrayCommand* source,
   void* msg_buf,
@@ -48,7 +48,7 @@ uint32_t uavcan_equipment_actuator_ArrayCommand_encode_internal(uavcan_equipment
     // - Add array items
     for (c = 0; c < source->commands.len; c++)
     {
-        offset += uavcan_equipment_actuator_Command_encode_internal((void*)&source->commands.data[c], msg_buf, offset, 0);
+        offset = uavcan_equipment_actuator_Command_encode_internal((void*)&source->commands.data[c], msg_buf, offset, 0);
     }
 
     return offset;
@@ -78,7 +78,7 @@ uint32_t uavcan_equipment_actuator_ArrayCommand_encode(uavcan_equipment_actuator
   *                     uavcan_equipment_actuator_ArrayCommand dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_actuator_ArrayCommand_decode_internal(
   const CanardRxTransfer* transfer,
@@ -101,7 +101,7 @@ int32_t uavcan_equipment_actuator_ArrayCommand_decode_internal(
     {
         // - Array length 4 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  4,
                                  false,
                                  (void*)&dest->commands.len); // 0
@@ -120,7 +120,7 @@ int32_t uavcan_equipment_actuator_ArrayCommand_decode_internal(
 
     for (c = 0; c < dest->commands.len; c++)
     {
-        offset += uavcan_equipment_actuator_Command_decode_internal(transfer,
+        offset = uavcan_equipment_actuator_Command_decode_internal(transfer,
                                                 0,
                                                 (void*)&dest->commands.data[c],
                                                 dyn_arr_buf,

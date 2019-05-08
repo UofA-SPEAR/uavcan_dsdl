@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_ice_FuelTankStatus_encode_internal(uavcan_equipment_ice_FuelTankStatus* source,
   void* msg_buf,
@@ -91,7 +91,7 @@ uint32_t uavcan_equipment_ice_FuelTankStatus_encode(uavcan_equipment_ice_FuelTan
   *                     uavcan_equipment_ice_FuelTankStatus dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_ice_FuelTankStatus_decode_internal(
   const CanardRxTransfer* transfer,
@@ -110,21 +110,21 @@ int32_t uavcan_equipment_ice_FuelTankStatus_decode_internal(
     // Void9
     offset += 9;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->available_fuel_volume_percent);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->available_fuel_volume_percent);
     if (ret != 7)
     {
         goto uavcan_equipment_ice_FuelTankStatus_error_exit;
     }
     offset += 7;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->available_fuel_volume_cm3);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->available_fuel_volume_cm3);
     if (ret != 32)
     {
         goto uavcan_equipment_ice_FuelTankStatus_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->fuel_consumption_rate_cm3pm);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->fuel_consumption_rate_cm3pm);
     if (ret != 32)
     {
         goto uavcan_equipment_ice_FuelTankStatus_error_exit;
@@ -132,7 +132,7 @@ int32_t uavcan_equipment_ice_FuelTankStatus_decode_internal(
     offset += 32;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -145,7 +145,7 @@ int32_t uavcan_equipment_ice_FuelTankStatus_decode_internal(
 #endif
     offset += 16;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->fuel_tank_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->fuel_tank_id);
     if (ret != 8)
     {
         goto uavcan_equipment_ice_FuelTankStatus_error_exit;

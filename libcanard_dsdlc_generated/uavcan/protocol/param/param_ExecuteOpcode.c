@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_param_ExecuteOpcodeRequest_encode_internal(uavcan_protocol_param_ExecuteOpcodeRequest* source,
   void* msg_buf,
@@ -69,7 +69,7 @@ uint32_t uavcan_protocol_param_ExecuteOpcodeRequest_encode(uavcan_protocol_param
   *                     uavcan_protocol_param_ExecuteOpcodeRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_param_ExecuteOpcodeRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -80,14 +80,14 @@ int32_t uavcan_protocol_param_ExecuteOpcodeRequest_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->opcode);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->opcode);
     if (ret != 8)
     {
         goto uavcan_protocol_param_ExecuteOpcodeRequest_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 48, true, (void*)&dest->argument);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, true, (void*)&dest->argument);
     if (ret != 48)
     {
         goto uavcan_protocol_param_ExecuteOpcodeRequest_error_exit;
@@ -141,7 +141,7 @@ int32_t uavcan_protocol_param_ExecuteOpcodeRequest_decode(const CanardRxTransfer
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_param_ExecuteOpcodeResponse_encode_internal(uavcan_protocol_param_ExecuteOpcodeResponse* source,
   void* msg_buf,
@@ -152,8 +152,8 @@ uint32_t uavcan_protocol_param_ExecuteOpcodeResponse_encode_internal(uavcan_prot
     canardEncodeScalar(msg_buf, offset, 48, (void*)&source->argument); // 140737488355327
     offset += 48;
 
-    source->ok = CANARD_INTERNAL_SATURATE_UNSIGNED(source->ok, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->ok); // 0
+    source->ok = CANARD_INTERNAL_SATURATE_UNSIGNED(source->ok, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->ok); // 1
     offset += 1;
 
     return offset;
@@ -183,7 +183,7 @@ uint32_t uavcan_protocol_param_ExecuteOpcodeResponse_encode(uavcan_protocol_para
   *                     uavcan_protocol_param_ExecuteOpcodeResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_param_ExecuteOpcodeResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -194,14 +194,14 @@ int32_t uavcan_protocol_param_ExecuteOpcodeResponse_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 48, true, (void*)&dest->argument);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 48, true, (void*)&dest->argument);
     if (ret != 48)
     {
         goto uavcan_protocol_param_ExecuteOpcodeResponse_error_exit;
     }
     offset += 48;
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->ok);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->ok);
     if (ret != 1)
     {
         goto uavcan_protocol_param_ExecuteOpcodeResponse_error_exit;

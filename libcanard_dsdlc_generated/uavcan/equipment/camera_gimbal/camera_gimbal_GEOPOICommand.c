@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_camera_gimbal_GEOPOICommand_encode_internal(uavcan_equipment_camera_gimbal_GEOPOICommand* source,
   void* msg_buf,
@@ -81,7 +81,7 @@ uint32_t uavcan_equipment_camera_gimbal_GEOPOICommand_encode(uavcan_equipment_ca
   *                     uavcan_equipment_camera_gimbal_GEOPOICommand dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_camera_gimbal_GEOPOICommand_decode_internal(
   const CanardRxTransfer* transfer,
@@ -92,7 +92,7 @@ int32_t uavcan_equipment_camera_gimbal_GEOPOICommand_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->gimbal_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->gimbal_id);
     if (ret != 8)
     {
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;
@@ -100,35 +100,35 @@ int32_t uavcan_equipment_camera_gimbal_GEOPOICommand_decode_internal(
     offset += 8;
 
     // Compound
-    offset = uavcan_equipment_camera_gimbal_Mode_decode_internal(transfer, 0, &dest->mode, dyn_arr_buf, offset);
+    offset = uavcan_equipment_camera_gimbal_Mode_decode_internal(transfer, payload_len, &dest->mode, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;
     }
 
-    ret = canardDecodeScalar(transfer, offset, 32, true, (void*)&dest->longitude_deg_1e7);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, true, (void*)&dest->longitude_deg_1e7);
     if (ret != 32)
     {
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, true, (void*)&dest->latitude_deg_1e7);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, true, (void*)&dest->latitude_deg_1e7);
     if (ret != 32)
     {
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 22, true, (void*)&dest->height_cm);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 22, true, (void*)&dest->height_cm);
     if (ret != 22)
     {
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;
     }
     offset += 22;
 
-    ret = canardDecodeScalar(transfer, offset, 2, false, (void*)&dest->height_reference);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 2, false, (void*)&dest->height_reference);
     if (ret != 2)
     {
         goto uavcan_equipment_camera_gimbal_GEOPOICommand_error_exit;

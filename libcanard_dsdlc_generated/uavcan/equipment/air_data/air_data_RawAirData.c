@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_air_data_RawAirData_encode_internal(uavcan_equipment_air_data_RawAirData* source,
   void* msg_buf,
@@ -132,7 +132,7 @@ uint32_t uavcan_equipment_air_data_RawAirData_encode(uavcan_equipment_air_data_R
   *                     uavcan_equipment_air_data_RawAirData dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
   const CanardRxTransfer* transfer,
@@ -149,21 +149,21 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     CANARD_USE_FLOAT16_CAST tmp_float = 0;
 #endif
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->flags);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->flags);
     if (ret != 8)
     {
         goto uavcan_equipment_air_data_RawAirData_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->static_pressure);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->static_pressure);
     if (ret != 32)
     {
         goto uavcan_equipment_air_data_RawAirData_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->differential_pressure);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->differential_pressure);
     if (ret != 32)
     {
         goto uavcan_equipment_air_data_RawAirData_error_exit;
@@ -171,7 +171,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     offset += 32;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -185,7 +185,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -199,7 +199,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -213,7 +213,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -237,7 +237,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
     {
         // - Array length 5 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  5,
                                  false,
                                  (void*)&dest->covariance.len); // 32767
@@ -259,7 +259,7 @@ int32_t uavcan_equipment_air_data_RawAirData_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767

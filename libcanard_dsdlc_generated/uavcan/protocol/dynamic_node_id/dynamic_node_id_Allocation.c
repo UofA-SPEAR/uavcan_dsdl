@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_dynamic_node_id_Allocation_encode_internal(uavcan_protocol_dynamic_node_id_Allocation* source,
   void* msg_buf,
@@ -41,8 +41,8 @@ uint32_t uavcan_protocol_dynamic_node_id_Allocation_encode_internal(uavcan_proto
     canardEncodeScalar(msg_buf, offset, 7, (void*)&source->node_id); // 127
     offset += 7;
 
-    source->first_part_of_unique_id = CANARD_INTERNAL_SATURATE_UNSIGNED(source->first_part_of_unique_id, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->first_part_of_unique_id); // 0
+    source->first_part_of_unique_id = CANARD_INTERNAL_SATURATE_UNSIGNED(source->first_part_of_unique_id, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->first_part_of_unique_id); // 1
     offset += 1;
 
     // Dynamic Array (unique_id)
@@ -90,7 +90,7 @@ uint32_t uavcan_protocol_dynamic_node_id_Allocation_encode(uavcan_protocol_dynam
   *                     uavcan_protocol_dynamic_node_id_Allocation dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_dynamic_node_id_Allocation_decode_internal(
   const CanardRxTransfer* transfer,
@@ -102,14 +102,14 @@ int32_t uavcan_protocol_dynamic_node_id_Allocation_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 7, false, (void*)&dest->node_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 7, false, (void*)&dest->node_id);
     if (ret != 7)
     {
         goto uavcan_protocol_dynamic_node_id_Allocation_error_exit;
     }
     offset += 7;
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->first_part_of_unique_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->first_part_of_unique_id);
     if (ret != 1)
     {
         goto uavcan_protocol_dynamic_node_id_Allocation_error_exit;
@@ -127,7 +127,7 @@ int32_t uavcan_protocol_dynamic_node_id_Allocation_decode_internal(
     {
         // - Array length 5 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  5,
                                  false,
                                  (void*)&dest->unique_id.len); // 255
@@ -149,7 +149,7 @@ int32_t uavcan_protocol_dynamic_node_id_Allocation_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

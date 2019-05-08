@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_CoarseOrientation_encode_internal(uavcan_CoarseOrientation* source,
   void* msg_buf,
@@ -44,8 +44,8 @@ uint32_t uavcan_CoarseOrientation_encode_internal(uavcan_CoarseOrientation* sour
         offset += 5;
     }
 
-    source->orientation_defined = CANARD_INTERNAL_SATURATE_UNSIGNED(source->orientation_defined, 0)
-    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->orientation_defined); // 0
+    source->orientation_defined = CANARD_INTERNAL_SATURATE_UNSIGNED(source->orientation_defined, 1)
+    canardEncodeScalar(msg_buf, offset, 1, (void*)&source->orientation_defined); // 1
     offset += 1;
 
     return offset;
@@ -75,7 +75,7 @@ uint32_t uavcan_CoarseOrientation_encode(uavcan_CoarseOrientation* source, void*
   *                     uavcan_CoarseOrientation dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_CoarseOrientation_decode_internal(
   const CanardRxTransfer* transfer,
@@ -90,7 +90,7 @@ int32_t uavcan_CoarseOrientation_decode_internal(
     // Static array (fixed_axis_roll_pitch_yaw)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 5, true, (void*)(dest->fixed_axis_roll_pitch_yaw + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 5, true, (void*)(dest->fixed_axis_roll_pitch_yaw + c));
         if (ret != 5)
         {
             goto uavcan_CoarseOrientation_error_exit;
@@ -98,7 +98,7 @@ int32_t uavcan_CoarseOrientation_decode_internal(
         offset += 5;
     }
 
-    ret = canardDecodeScalar(transfer, offset, 1, false, (void*)&dest->orientation_defined);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 1, false, (void*)&dest->orientation_defined);
     if (ret != 1)
     {
         goto uavcan_CoarseOrientation_error_exit;

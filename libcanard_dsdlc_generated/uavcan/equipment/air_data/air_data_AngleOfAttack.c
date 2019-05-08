@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_air_data_AngleOfAttack_encode_internal(uavcan_equipment_air_data_AngleOfAttack* source,
   void* msg_buf,
@@ -89,7 +89,7 @@ uint32_t uavcan_equipment_air_data_AngleOfAttack_encode(uavcan_equipment_air_dat
   *                     uavcan_equipment_air_data_AngleOfAttack dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_air_data_AngleOfAttack_decode_internal(
   const CanardRxTransfer* transfer,
@@ -105,7 +105,7 @@ int32_t uavcan_equipment_air_data_AngleOfAttack_decode_internal(
     CANARD_USE_FLOAT16_CAST tmp_float = 0;
 #endif
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->sensor_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->sensor_id);
     if (ret != 8)
     {
         goto uavcan_equipment_air_data_AngleOfAttack_error_exit;
@@ -113,7 +113,7 @@ int32_t uavcan_equipment_air_data_AngleOfAttack_decode_internal(
     offset += 8;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -127,7 +127,7 @@ int32_t uavcan_equipment_air_data_AngleOfAttack_decode_internal(
     offset += 16;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_file_WriteRequest_encode_internal(uavcan_protocol_file_WriteRequest* source,
   void* msg_buf,
@@ -89,7 +89,7 @@ uint32_t uavcan_protocol_file_WriteRequest_encode(uavcan_protocol_file_WriteRequ
   *                     uavcan_protocol_file_WriteRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_file_WriteRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -101,7 +101,7 @@ int32_t uavcan_protocol_file_WriteRequest_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 40, false, (void*)&dest->offset);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 40, false, (void*)&dest->offset);
     if (ret != 40)
     {
         goto uavcan_protocol_file_WriteRequest_error_exit;
@@ -109,7 +109,7 @@ int32_t uavcan_protocol_file_WriteRequest_decode_internal(
     offset += 40;
 
     // Compound
-    offset = uavcan_protocol_file_Path_decode_internal(transfer, 0, &dest->path, dyn_arr_buf, offset);
+    offset = uavcan_protocol_file_Path_decode_internal(transfer, payload_len, &dest->path, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -127,7 +127,7 @@ int32_t uavcan_protocol_file_WriteRequest_decode_internal(
     {
         // - Array length 8 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  8,
                                  false,
                                  (void*)&dest->data.len); // 255
@@ -149,7 +149,7 @@ int32_t uavcan_protocol_file_WriteRequest_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255
@@ -209,7 +209,7 @@ int32_t uavcan_protocol_file_WriteRequest_decode(const CanardRxTransfer* transfe
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_file_WriteResponse_encode_internal(uavcan_protocol_file_WriteResponse* source,
   void* msg_buf,
@@ -217,7 +217,7 @@ uint32_t uavcan_protocol_file_WriteResponse_encode_internal(uavcan_protocol_file
   uint8_t CANARD_MAYBE_UNUSED(root_item))
 {
     // Compound
-    offset = uavcan_protocol_file_Error_encode_internal(&source->error, msg_buf, offset, 0);
+    offset = uavcan_protocol_file_Error_encode_internal(&source->error, msg_buf, offset, root_item);
 
     return offset;
 }
@@ -246,7 +246,7 @@ uint32_t uavcan_protocol_file_WriteResponse_encode(uavcan_protocol_file_WriteRes
   *                     uavcan_protocol_file_WriteResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_file_WriteResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -258,7 +258,7 @@ int32_t uavcan_protocol_file_WriteResponse_decode_internal(
     int32_t ret = 0;
 
     // Compound
-    offset = uavcan_protocol_file_Error_decode_internal(transfer, 0, &dest->error, dyn_arr_buf, offset);
+    offset = uavcan_protocol_file_Error_decode_internal(transfer, payload_len, &dest->error, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;

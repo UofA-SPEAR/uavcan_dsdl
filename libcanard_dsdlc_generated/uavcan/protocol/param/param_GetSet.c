@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_param_GetSetRequest_encode_internal(uavcan_protocol_param_GetSetRequest* source,
   void* msg_buf,
@@ -89,7 +89,7 @@ uint32_t uavcan_protocol_param_GetSetRequest_encode(uavcan_protocol_param_GetSet
   *                     uavcan_protocol_param_GetSetRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_param_GetSetRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -101,7 +101,7 @@ int32_t uavcan_protocol_param_GetSetRequest_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 13, false, (void*)&dest->index);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 13, false, (void*)&dest->index);
     if (ret != 13)
     {
         goto uavcan_protocol_param_GetSetRequest_error_exit;
@@ -109,7 +109,7 @@ int32_t uavcan_protocol_param_GetSetRequest_decode_internal(
     offset += 13;
 
     // Compound
-    offset = uavcan_protocol_param_Value_decode_internal(transfer, 0, &dest->value, dyn_arr_buf, offset);
+    offset = uavcan_protocol_param_Value_decode_internal(transfer, payload_len, &dest->value, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -127,7 +127,7 @@ int32_t uavcan_protocol_param_GetSetRequest_decode_internal(
     {
         // - Array length 7 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  7,
                                  false,
                                  (void*)&dest->name.len); // 255
@@ -149,7 +149,7 @@ int32_t uavcan_protocol_param_GetSetRequest_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255
@@ -209,7 +209,7 @@ int32_t uavcan_protocol_param_GetSetRequest_decode(const CanardRxTransfer* trans
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_param_GetSetResponse_encode_internal(uavcan_protocol_param_GetSetResponse* source,
   void* msg_buf,
@@ -287,7 +287,7 @@ uint32_t uavcan_protocol_param_GetSetResponse_encode(uavcan_protocol_param_GetSe
   *                     uavcan_protocol_param_GetSetResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -303,7 +303,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
     offset += 5;
 
     // Compound
-    offset = uavcan_protocol_param_Value_decode_internal(transfer, 0, &dest->value, dyn_arr_buf, offset);
+    offset = uavcan_protocol_param_Value_decode_internal(transfer, payload_len, &dest->value, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -314,7 +314,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
     offset += 5;
 
     // Compound
-    offset = uavcan_protocol_param_Value_decode_internal(transfer, 0, &dest->default_value, dyn_arr_buf, offset);
+    offset = uavcan_protocol_param_Value_decode_internal(transfer, payload_len, &dest->default_value, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -325,7 +325,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
     offset += 6;
 
     // Compound
-    offset = uavcan_protocol_param_NumericValue_decode_internal(transfer, 0, &dest->max_value, dyn_arr_buf, offset);
+    offset = uavcan_protocol_param_NumericValue_decode_internal(transfer, payload_len, &dest->max_value, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -336,7 +336,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
     offset += 6;
 
     // Compound
-    offset = uavcan_protocol_param_NumericValue_decode_internal(transfer, 0, &dest->min_value, dyn_arr_buf, offset);
+    offset = uavcan_protocol_param_NumericValue_decode_internal(transfer, payload_len, &dest->min_value, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -354,7 +354,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
     {
         // - Array length 7 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  7,
                                  false,
                                  (void*)&dest->name.len); // 255
@@ -376,7 +376,7 @@ int32_t uavcan_protocol_param_GetSetResponse_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

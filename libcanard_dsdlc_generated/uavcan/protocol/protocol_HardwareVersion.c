@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_HardwareVersion_encode_internal(uavcan_protocol_HardwareVersion* source,
   void* msg_buf,
@@ -95,7 +95,7 @@ uint32_t uavcan_protocol_HardwareVersion_encode(uavcan_protocol_HardwareVersion*
   *                     uavcan_protocol_HardwareVersion dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_HardwareVersion_decode_internal(
   const CanardRxTransfer* transfer,
@@ -107,14 +107,14 @@ int32_t uavcan_protocol_HardwareVersion_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->major);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->major);
     if (ret != 8)
     {
         goto uavcan_protocol_HardwareVersion_error_exit;
     }
     offset += 8;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->minor);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->minor);
     if (ret != 8)
     {
         goto uavcan_protocol_HardwareVersion_error_exit;
@@ -124,7 +124,7 @@ int32_t uavcan_protocol_HardwareVersion_decode_internal(
     // Static array (unique_id)
     for (c = 0; c < 16; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 8, false, (void*)(dest->unique_id + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)(dest->unique_id + c));
         if (ret != 8)
         {
             goto uavcan_protocol_HardwareVersion_error_exit;
@@ -143,7 +143,7 @@ int32_t uavcan_protocol_HardwareVersion_decode_internal(
     {
         // - Array length 8 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  8,
                                  false,
                                  (void*)&dest->certificate_of_authenticity.len); // 255
@@ -165,7 +165,7 @@ int32_t uavcan_protocol_HardwareVersion_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255

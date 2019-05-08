@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_enumeration_BeginRequest_encode_internal(uavcan_protocol_enumeration_BeginRequest* source,
   void* msg_buf,
@@ -85,7 +85,7 @@ uint32_t uavcan_protocol_enumeration_BeginRequest_encode(uavcan_protocol_enumera
   *                     uavcan_protocol_enumeration_BeginRequest dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_enumeration_BeginRequest_decode_internal(
   const CanardRxTransfer* transfer,
@@ -97,7 +97,7 @@ int32_t uavcan_protocol_enumeration_BeginRequest_decode_internal(
     int32_t ret = 0;
     uint32_t c = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&dest->timeout_sec);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&dest->timeout_sec);
     if (ret != 16)
     {
         goto uavcan_protocol_enumeration_BeginRequest_error_exit;
@@ -115,7 +115,7 @@ int32_t uavcan_protocol_enumeration_BeginRequest_decode_internal(
     {
         // - Array length 7 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  7,
                                  false,
                                  (void*)&dest->parameter_name.len); // 255
@@ -137,7 +137,7 @@ int32_t uavcan_protocol_enumeration_BeginRequest_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      8,
                                      false,
                                      (void*)*dyn_arr_buf); // 255
@@ -197,7 +197,7 @@ int32_t uavcan_protocol_enumeration_BeginRequest_decode(const CanardRxTransfer* 
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_protocol_enumeration_BeginResponse_encode_internal(uavcan_protocol_enumeration_BeginResponse* source,
   void* msg_buf,
@@ -234,7 +234,7 @@ uint32_t uavcan_protocol_enumeration_BeginResponse_encode(uavcan_protocol_enumer
   *                     uavcan_protocol_enumeration_BeginResponse dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_protocol_enumeration_BeginResponse_decode_internal(
   const CanardRxTransfer* transfer,
@@ -245,7 +245,7 @@ int32_t uavcan_protocol_enumeration_BeginResponse_decode_internal(
 {
     int32_t ret = 0;
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->error);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->error);
     if (ret != 8)
     {
         goto uavcan_protocol_enumeration_BeginResponse_error_exit;

@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_navigation_GlobalNavigationSolution_encode_internal(uavcan_navigation_GlobalNavigationSolution* source,
   void* msg_buf,
@@ -158,7 +158,7 @@ uint32_t uavcan_navigation_GlobalNavigationSolution_encode(uavcan_navigation_Glo
   *                     uavcan_navigation_GlobalNavigationSolution dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
   const CanardRxTransfer* transfer,
@@ -176,49 +176,49 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
 #endif
 
     // Compound
-    offset = uavcan_Timestamp_decode_internal(transfer, 0, &dest->timestamp, dyn_arr_buf, offset);
+    offset = uavcan_Timestamp_decode_internal(transfer, payload_len, &dest->timestamp, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
 
-    ret = canardDecodeScalar(transfer, offset, 64, false, (void*)&dest->longitude);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 64, false, (void*)&dest->longitude);
     if (ret != 64)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
     offset += 64;
 
-    ret = canardDecodeScalar(transfer, offset, 64, false, (void*)&dest->latitude);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 64, false, (void*)&dest->latitude);
     if (ret != 64)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
     offset += 64;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->height_ellipsoid);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->height_ellipsoid);
     if (ret != 32)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->height_msl);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->height_msl);
     if (ret != 32)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->height_agl);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->height_agl);
     if (ret != 32)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
     }
     offset += 32;
 
-    ret = canardDecodeScalar(transfer, offset, 32, false, (void*)&dest->height_baro);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)&dest->height_baro);
     if (ret != 32)
     {
         goto uavcan_navigation_GlobalNavigationSolution_error_exit;
@@ -226,7 +226,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     offset += 32;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -242,7 +242,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     // Static array (orientation_xyzw)
     for (c = 0; c < 4; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->orientation_xyzw + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->orientation_xyzw + c));
         if (ret != 32)
         {
             goto uavcan_navigation_GlobalNavigationSolution_error_exit;
@@ -253,7 +253,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     // Dynamic Array (pose_covariance)
     //  - Array length, not last item 6 bits
     ret = canardDecodeScalar(transfer,
-                             offset,
+                             (uint32_t)offset,
                              6,
                              false,
                              (void*)&dest->pose_covariance.len); // 32767
@@ -274,7 +274,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767
@@ -290,7 +290,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     // Static array (linear_velocity_body)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->linear_velocity_body + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->linear_velocity_body + c));
         if (ret != 32)
         {
             goto uavcan_navigation_GlobalNavigationSolution_error_exit;
@@ -301,7 +301,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     // Static array (angular_velocity_body)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->angular_velocity_body + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->angular_velocity_body + c));
         if (ret != 32)
         {
             goto uavcan_navigation_GlobalNavigationSolution_error_exit;
@@ -312,7 +312,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     // Static array (linear_acceleration_body)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 16, false, (void*)(dest->linear_acceleration_body + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)(dest->linear_acceleration_body + c));
         if (ret != 16)
         {
             goto uavcan_navigation_GlobalNavigationSolution_error_exit;
@@ -331,7 +331,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
     {
         // - Array length 6 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  6,
                                  false,
                                  (void*)&dest->velocity_covariance.len); // 32767
@@ -353,7 +353,7 @@ int32_t uavcan_navigation_GlobalNavigationSolution_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767

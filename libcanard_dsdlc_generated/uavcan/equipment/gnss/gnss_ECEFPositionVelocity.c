@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_gnss_ECEFPositionVelocity_encode_internal(uavcan_equipment_gnss_ECEFPositionVelocity* source,
   void* msg_buf,
@@ -99,7 +99,7 @@ uint32_t uavcan_equipment_gnss_ECEFPositionVelocity_encode(uavcan_equipment_gnss
   *                     uavcan_equipment_gnss_ECEFPositionVelocity dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_gnss_ECEFPositionVelocity_decode_internal(
   const CanardRxTransfer* transfer,
@@ -114,7 +114,7 @@ int32_t uavcan_equipment_gnss_ECEFPositionVelocity_decode_internal(
     // Static array (velocity_xyz)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 32, false, (void*)(dest->velocity_xyz + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 32, false, (void*)(dest->velocity_xyz + c));
         if (ret != 32)
         {
             goto uavcan_equipment_gnss_ECEFPositionVelocity_error_exit;
@@ -125,7 +125,7 @@ int32_t uavcan_equipment_gnss_ECEFPositionVelocity_decode_internal(
     // Static array (position_xyz_mm)
     for (c = 0; c < 3; c++)
     {
-        ret = canardDecodeScalar(transfer, offset, 36, true, (void*)(dest->position_xyz_mm + c));
+        ret = canardDecodeScalar(transfer, (uint32_t)offset, 36, true, (void*)(dest->position_xyz_mm + c));
         if (ret != 36)
         {
             goto uavcan_equipment_gnss_ECEFPositionVelocity_error_exit;
@@ -147,7 +147,7 @@ int32_t uavcan_equipment_gnss_ECEFPositionVelocity_decode_internal(
     {
         // - Array length 6 bits
         ret = canardDecodeScalar(transfer,
-                                 offset,
+                                 (uint32_t)offset,
                                  6,
                                  false,
                                  (void*)&dest->covariance.len); // 32767
@@ -169,7 +169,7 @@ int32_t uavcan_equipment_gnss_ECEFPositionVelocity_decode_internal(
         if (dyn_arr_buf)
         {
             ret = canardDecodeScalar(transfer,
-                                     offset,
+                                     (uint32_t)offset,
                                      16,
                                      false,
                                      (void*)*dyn_arr_buf); // 32767

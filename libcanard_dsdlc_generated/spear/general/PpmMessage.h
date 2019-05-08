@@ -22,22 +22,28 @@ extern "C"
 # DSDL definitions for ppm inputs
 # No more than 8 channels by spec
 
+<<<<<<< HEAD
 uint8 channel_num
 
+=======
+>>>>>>> 02f7b42615f5f84f65c299038873bc7956c4a5c6
 int32[<=8] channel_data
 ******************************************************************************/
 
 /********************* DSDL signature source definition ***********************
 spear.general.PpmMessage
+<<<<<<< HEAD
 saturated uint8 channel_num
+=======
+>>>>>>> 02f7b42615f5f84f65c299038873bc7956c4a5c6
 saturated int32[<=8] channel_data
 ******************************************************************************/
 
 #define SPEAR_GENERAL_PPMMESSAGE_ID                        20200
 #define SPEAR_GENERAL_PPMMESSAGE_NAME                      "spear.general.PpmMessage"
-#define SPEAR_GENERAL_PPMMESSAGE_SIGNATURE                 (0x3A79CD21A4EB94A7ULL)
+#define SPEAR_GENERAL_PPMMESSAGE_SIGNATURE                 (0x7C3F4330C6EBEBC0ULL)
 
-#define SPEAR_GENERAL_PPMMESSAGE_MAX_SIZE                  ((268 + 7)/8)
+#define SPEAR_GENERAL_PPMMESSAGE_MAX_SIZE                  ((260 + 7)/8)
 
 // Constants
 
@@ -46,7 +52,6 @@ saturated int32[<=8] channel_data
 typedef struct
 {
     // FieldTypes
-    uint8_t    channel_num;                   // bit len 8
     struct
     {
         uint8_t    len;                       // Dynamic array length

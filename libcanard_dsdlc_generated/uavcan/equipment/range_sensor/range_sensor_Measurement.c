@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t uavcan_equipment_range_sensor_Measurement_encode_internal(uavcan_equipment_range_sensor_Measurement* source,
   void* msg_buf,
@@ -101,7 +101,7 @@ uint32_t uavcan_equipment_range_sensor_Measurement_encode(uavcan_equipment_range
   *                     uavcan_equipment_range_sensor_Measurement dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
   const CanardRxTransfer* transfer,
@@ -118,14 +118,14 @@ int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
 #endif
 
     // Compound
-    offset = uavcan_Timestamp_decode_internal(transfer, 0, &dest->timestamp, dyn_arr_buf, offset);
+    offset = uavcan_Timestamp_decode_internal(transfer, payload_len, &dest->timestamp, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
         goto uavcan_equipment_range_sensor_Measurement_error_exit;
     }
 
-    ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->sensor_id);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 8, false, (void*)&dest->sensor_id);
     if (ret != 8)
     {
         goto uavcan_equipment_range_sensor_Measurement_error_exit;
@@ -133,7 +133,7 @@ int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
     offset += 8;
 
     // Compound
-    offset = uavcan_CoarseOrientation_decode_internal(transfer, 0, &dest->beam_orientation_in_body_frame, dyn_arr_buf, offset);
+    offset = uavcan_CoarseOrientation_decode_internal(transfer, payload_len, &dest->beam_orientation_in_body_frame, dyn_arr_buf, offset);
     if (offset < 0)
     {
         ret = offset;
@@ -141,7 +141,7 @@ int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
     }
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {
@@ -154,14 +154,14 @@ int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
 #endif
     offset += 16;
 
-    ret = canardDecodeScalar(transfer, offset, 5, false, (void*)&dest->sensor_type);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 5, false, (void*)&dest->sensor_type);
     if (ret != 5)
     {
         goto uavcan_equipment_range_sensor_Measurement_error_exit;
     }
     offset += 5;
 
-    ret = canardDecodeScalar(transfer, offset, 3, false, (void*)&dest->reading_type);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 3, false, (void*)&dest->reading_type);
     if (ret != 3)
     {
         goto uavcan_equipment_range_sensor_Measurement_error_exit;
@@ -169,7 +169,7 @@ int32_t uavcan_equipment_range_sensor_Measurement_decode_internal(
     offset += 3;
 
     // float16 special handling
-    ret = canardDecodeScalar(transfer, offset, 16, false, (void*)&tmp_float);
+    ret = canardDecodeScalar(transfer, (uint32_t)offset, 16, false, (void*)&tmp_float);
 
     if (ret != 16)
     {

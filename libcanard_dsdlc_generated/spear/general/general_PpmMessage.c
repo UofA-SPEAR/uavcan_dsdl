@@ -13,7 +13,7 @@
 #endif
 
 #ifndef CANARD_INTERNAL_SATURATE_UNSIGNED
-#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) > max) ? max : (x) );
+#define CANARD_INTERNAL_SATURATE_UNSIGNED(x, max) ( ((x) >= max) ? max : (x) );
 #endif
 
 #if defined(__GNUC__)
@@ -28,7 +28,7 @@
   * @param msg_buf: pointer to msg storage
   * @param offset: bit offset to msg storage
   * @param root_item: for detecting if TAO should be used
-  * @retval returns offset
+  * @retval returns new offset
   */
 uint32_t spear_general_PpmMessage_encode_internal(spear_general_PpmMessage* source,
   void* msg_buf,
@@ -37,9 +37,12 @@ uint32_t spear_general_PpmMessage_encode_internal(spear_general_PpmMessage* sour
 {
     uint32_t c = 0;
 
+<<<<<<< HEAD
     canardEncodeScalar(msg_buf, offset, 8, (void*)&source->channel_num); // 255
     offset += 8;
 
+=======
+>>>>>>> 02f7b42615f5f84f65c299038873bc7956c4a5c6
     // Dynamic Array (channel_data)
     if (! root_item)
     {
@@ -85,7 +88,7 @@ uint32_t spear_general_PpmMessage_encode(spear_general_PpmMessage* source, void*
   *                     spear_general_PpmMessage dyn memory will point to dyn_arr_buf memory.
   *                     NULL will ignore dynamic arrays decoding.
   * @param offset: Call with 0, bit offset to msg storage
-  * @retval offset or ERROR value if < 0
+  * @retval new offset or ERROR value if < 0
   */
 int32_t spear_general_PpmMessage_decode_internal(
   const CanardRxTransfer* transfer,
@@ -96,12 +99,59 @@ int32_t spear_general_PpmMessage_decode_internal(
 {
     int32_t ret = 0;
     uint32_t c = 0;
+<<<<<<< HEAD
 
     ret = canardDecodeScalar(transfer, offset, 8, false, (void*)&dest->channel_num);
     if (ret != 8)
+=======
+
+    // Dynamic Array (channel_data)
+    //  - Last item in struct & Root item & (Array Size > 8 bit), tail array optimization
+    if (payload_len)
     {
-        goto spear_general_PpmMessage_error_exit;
+        //  - Calculate Array length from MSG length
+        dest->channel_data.len = ((payload_len * 8) - offset ) / 32; // 32 bit array item size
     }
+    else
+    {
+        // - Array length 4 bits
+        ret = canardDecodeScalar(transfer,
+                                 (uint32_t)offset,
+                                 4,
+                                 false,
+                                 (void*)&dest->channel_data.len); // 2147483647
+        if (ret != 4)
+        {
+            goto spear_general_PpmMessage_error_exit;
+        }
+        offset += 4;
+    }
+
+    //  - Get Array
+    if (dyn_arr_buf)
+>>>>>>> 02f7b42615f5f84f65c299038873bc7956c4a5c6
+    {
+        dest->channel_data.data = (int32_t*)*dyn_arr_buf;
+    }
+
+    for (c = 0; c < dest->channel_data.len; c++)
+    {
+        if (dyn_arr_buf)
+        {
+            ret = canardDecodeScalar(transfer,
+                                     (uint32_t)offset,
+                                     32,
+                                     true,
+                                     (void*)*dyn_arr_buf); // 2147483647
+            if (ret != 32)
+            {
+                goto spear_general_PpmMessage_error_exit;
+            }
+            *dyn_arr_buf = (uint8_t*)(((int32_t*)*dyn_arr_buf) + 1);
+        }
+        offset += 32;
+    }
+<<<<<<< HEAD
     offset += 8;
 
     // Dynamic Array (channel_data)
@@ -149,6 +199,8 @@ int32_t spear_general_PpmMessage_decode_internal(
         }
         offset += 32;
     }
+=======
+>>>>>>> 02f7b42615f5f84f65c299038873bc7956c4a5c6
     return offset;
 
 spear_general_PpmMessage_error_exit:
