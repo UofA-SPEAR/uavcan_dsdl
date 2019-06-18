@@ -1,0 +1,6 @@
+# Simple message type to relay wheel odometry data back to main computer.
+# Wheels SHOULD be time-synced.
+
+uint8 wheel_id
+# Linear distance travelled by wheel (in m)
+float32 delta
