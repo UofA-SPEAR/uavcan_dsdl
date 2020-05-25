@@ -1,0 +1,5 @@
+{#- There must exist a varialble named struct #}
+struct {
+{%- for attr in struct %}
+  {{ attr.data_type | type_from_primitive(use_standard_types=True) }} {{ attr.name }};
+{%- endfor %}  

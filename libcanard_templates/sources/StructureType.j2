@@ -1,0 +1,20 @@
+{% extends "common_header.j2" %}
+{% block contents %}
+
+unsigned int {{ c_name }}_encode(uint8_t *buf, unsigned int offset, struct {{c_name}} *data) {
+  unsigned int size = 0;
+{%- set off = namespace(set=0) -%}
+{%- for attr in T.attributes -%}
+{%- include "encode.j2" -%}
+{%- endfor %}
+  return size;
+}
+
+void {{ c_name }}_decode(uint8_t *buf, unsigned int buf_len, unsigned int offset, struct {{c_name}} *data) {
+{%- set off = namespace(set=0) -%}
+{%- for attr in T.attributes -%}
+{%- include "decode.j2" -%}
+{%- endfor %}
+}
+
+{% endblock %}

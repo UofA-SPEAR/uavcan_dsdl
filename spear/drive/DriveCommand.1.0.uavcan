@@ -3,5 +3,7 @@
 # Meant for non-steerable wheels. If it is meant to support other types,
 # we will version-bump it or add a new definition.
 
-uint8 wheel_id
-uavcan.si.unit.velocity.Scalar ground_velocity
+uint8 thing
+uavcan.node.Heartbeat.1.0 id
+---
+uint8 response

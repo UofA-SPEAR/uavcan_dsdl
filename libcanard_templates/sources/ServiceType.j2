@@ -1,0 +1,26 @@
+{% extends "common_header.j2" %}
+{% block contents %}
+
+{%- for msg in T.attributes %}
+{%- set name = msg.data_type.full_name.replace('.','_') %}
+unsigned int {{ name }}_encode(uint8_t *buf, unsigned int offset, struct {{ name }} *data) {
+  unsigned int size = 0;
+  {%- set off = namespace(set=0) -%}
+  {%- for attr in msg.data_type.attributes -%}
+  {%- include "encode.j2" -%}
+  {%- endfor %}
+  return size;
+}
+{% endfor %}
+
+{%- for msg in T.attributes %}
+{%- set name = msg.data_type.full_name.replace('.','_') %}
+void {{ name }}_decode(uint8_t *buf, unsigned int buf_len, unsigned int offset, struct {{ name }} *data) {
+  {%- set off = namespace(set=0) -%}
+  {%- for attr in msg.data_type.attributes -%}
+  {%- include "decode.j2" -%}
+  {%- endfor %}
+}
+{% endfor %}
+
+{% endblock %}

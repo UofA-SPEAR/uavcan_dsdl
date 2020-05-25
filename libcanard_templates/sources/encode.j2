@@ -1,0 +1,23 @@
+{%- if attr.data_type is not StructureType %}
+  {%- if attr.data_type is BooleanType %}
+  canardDSDLSetBit(buf, offset + {{ off.set }}, data->{{attr.name}});
+  {%- elif attr.data_type is SignedIntegerType %}
+  canardDSDLSetIxx(buf, offset + {{ off.set }}, data->{{attr.name}}, {{attr.data_type.bit_length}});
+  {%- elif attr.data_type is UnsignedIntegerType %}
+  canardDSDLSetUxx(buf, offset + {{ off.set }}, data->{{attr.name}}, {{attr.data_type.bit_length}});
+  {%- elif attr.data_type is FloatType %}
+    {%- set len = attr.data_type.bit_length %}
+    {%- if len == 16 %}
+  canardDSDLSetF16(buf, offset + {{ off.set }}, data->{{attr.name}});
+    {%- elif len == 32 %}
+  canardDSDLSetF32(buf, offset + {{ off.set }}, data->{{attr.name}});
+    {%- elif len == 64 %}
+  canardDSDLSetF64(buf, offset + {{ off.set }}, data->{{attr.name}});
+    {%- endif %}
+  {%- endif %}
+  size += {{ attr.data_type.bit_length }};
+  {%- set off.set = off.set + attr.data_type.bit_length %}
+{%- else %}
+  size += {{ attr.data_type.full_name.replace('.','_') }}_encode(buf, offset + {{off.set}}, data->{{attr.name}});
+  {%- set off.set = off.set + attr.data_type.attributes[0].data_type.bit_length %}
+{%- endif -%}
