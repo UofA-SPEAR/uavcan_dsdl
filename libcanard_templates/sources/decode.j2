@@ -1,39 +1,45 @@
-{%- set len = attr.data_type.bit_length %}
-{%- if attr.data_type is not StructureType %}
-  data->{{attr.name}} = canardDSDLGet
-  {%- if attr.data_type is BooleanType -%}
-Bit(buf, buf_len, offset + {{off.set}});
-  {%- elif attr.data_type is SignedIntegerType -%}
+{% import "helpers.j2" as helpers %}
+
+{%- macro canard_data_type(type, offset) -%}
+  {%- set len = type.bit_length -%}
+  {%- if type is BooleanType -%}
+Bit(buf, buf_len, offset + {{offset}})
+  {%- elif type is SignedIntegerType -%}
     {%- if len <= 8 -%}
-I8(buf, buf_len, offset + {{off.set}}, {{len}});
+I8(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 16 -%}
-I16(buf, buf_len, offset + {{off.set}}, {{len}});
+I16(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 32 -%}
-I32(buf, buf_len, offset + {{off.set}}, {{len}});
+I32(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 64 -%}
-I64(buf, buf_len, offset + {{off.set}}, {{len}});
+I64(buf, buf_len, offset + {{offset}}, {{len}})
     {%- endif -%}
-  {%- elif attr.data_type is UnsignedIntegerType -%}
+  {%- elif type is UnsignedIntegerType -%}
     {%- if len <= 8 -%}
-U8(buf, buf_len, offset + {{off.set}}, {{len}});
+U8(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 16 -%}
-U16(buf, buf_len, offset + {{off.set}}, {{len}});
+U16(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 32 -%}
-U32(buf, buf_len, offset + {{off.set}}, {{len}});
+U32(buf, buf_len, offset + {{offset}}, {{len}})
     {%- elif len <= 64 -%}
-U64(buf, buf_len, offset + {{off.set}}, {{len}});
+U64(buf, buf_len, offset + {{offset}}, {{len}})
     {%- endif %}
-  {%- elif attr.data_type is FloatType %}
+  {%- elif type is FloatType %}
     {%- if len == 16 -%}
-F16(buf, buf_len, offset + {{ off.set }});
+F16(buf, buf_len, offset + {{ offset }})
     {%- elif len == 32 -%}
-F32(buf, buf_len, offset + {{ off.set }});
+F32(buf, buf_len, offset + {{ offset }})
     {%- elif len == 64 -%}
-F64(buf, buf_len, offset + {{ off.set }});
+F64(buf, buf_len, offset + {{ offset }})
     {%- endif -%}
   {%- endif %}
-  {%- set off.set = off.set + attr.data_type.bit_length %}
-{%- else %}
-  {{ attr.data_type.full_name.replace('.','_') }}_decode(buf, buf_len, offset + {{off.set}}, &data->{{attr.name}});
-  {%- set off.set = off.set + attr.data_type.attributes[0].data_type.bit_length %}
-{%- endif -%}
+{%- endmacro -%}
+
+{%- macro get_field(field, offset) -%}
+  {%- set len = attr.data_type.bit_length %}
+  {%- if attr.data_type is PrimitiveType %}
+  data->{{attr.name}} = canardDSDLGet{{ canard_data_type(attr.data_type, offset) }};
+  {%- else -%}
+  {{ attr.data_type.full_name.replace('.','_') }}_decode(buf, buf_len, offset + {{offset}}, &data->{{attr.name}});
+  {%- endif -%}
+{%- endmacro -%}

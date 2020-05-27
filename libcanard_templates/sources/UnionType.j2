@@ -1,18 +1,40 @@
 {% extends "common_header.j2" %}
 {% block contents %}
 
+{%- import "helpers.j2" as helpers %}
+{%- import "encode.j2" as encode %}
+{%- import "decode.j2" as decode %}
+
+#include <math.h>
+
+// Oh if only we had constexpr...
+// TODO make this not suck
+static uint8_t tag_width(void) {
+  static uint8_t tag_width = 0;
+  if (tag_width == 0)
+    tag_width = (uint8_t) ceil(log2({{T.number_of_variants}}));
+  return tag_width;
+}
+
 unsigned int {{ c_name }}_encode(uint8_t *buf, unsigned int offset, struct {{c_name}} *data) {
   unsigned int size = 0;
-{%- set off = namespace(set=0) -%}
-{%- for attr in T.attributes -%}
-{%- include "encode.j2" -%}
+  canardDSDLSetUxx(buf, offset, data->union_tag, tag_width());
+  switch (data->union_tag) {
+{%- for field, offset in T.iterate_fields_with_offsets() %}
+  case ({{T.full_name | c.macrofy}}_{{field.name | c.macrofy}}_TAG):
+    {{ encode.set_size(field, offset) | indent(width=2) }}
+    break;
 {%- endfor %}
+  default:
+    // should never get here!
+    break;
+  }
   return size;
 }
 
 void {{ c_name }}_decode(uint8_t *buf, unsigned int buf_len, unsigned int offset, struct {{c_name}} *data) {
-{%- set off = namespace(set=0) -%}
-{%- for attr in T.attributes -%}
+  data->union_tag = canardDSDLGet{{ decode.canard_data_type(T.tag_field_type, 0)}}
+{%- for attr, offset in T.iterate_fields_with_offsets() -%}
 {%- include "decode.j2" -%}
 {%- endfor %}
 }

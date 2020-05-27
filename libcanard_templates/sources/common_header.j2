@@ -11,7 +11,7 @@
  * full_name: {{T.full_name}}
  * full_namespace: {{T.full_namespace}}
  */
-{% set c_name = T.full_namespace | to_snake_case + "_" + T.full_name.split('.') | last %}
+{% set c_name = T.full_namespace | c.to_snake_case + "_" + T.full_name.split('.') | last %}
 #include "{{ T.full_name.replace(".","/") }}_{{ T.version[0] }}_{{ T.version[1] }}.h"
 {% block contents %}{% endblock -%}
 
