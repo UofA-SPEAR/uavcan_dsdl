@@ -1,0 +1,41 @@
+{% macro std_len(t) %}
+{%- if t.bit_length <= 8 -%}
+8
+{%- elif t.bit_length <= 16 -%}
+16
+{%- elif t.bit_length <= 32 -%}
+32
+{%- elif t.bit_length <= 64 -%}
+64
+{%- endif -%}
+{% endmacro %}
+
+{% macro define_composite(t) %}
+{#- TODO add constants #}
+{%- for f in T.fields %}
+{%- if f.data_type is PrimitiveType %}
+{{ define_primitive(f) }}
+{%- else %}
+Nested struct!
+{%- endif %}
+{%- endfor %}
+{% endmacro %}
+
+{% macro define_primitive(t) %}
+{%- set bit_length = std_len(t.data_type) %}
+{%- if t.data_type is BooleanType %}
+bool {{ t.name }}
+{%- elif t.data_type is IntegerType %}
+uint{{ bit_length }} {{ t.name }}
+{%- elif t.data_type is SignedIntegerType %}
+int{{ bit_length }} {{ t.name }}
+{%- elif t.data_type is FloatType %}
+{%- set data = namespace(len=0) %}
+{%- if t.data_type.bit_length == 16 %}
+{%- set data.len = 32 %}
+{%- else %}
+{%- set data.len = t.data_type.bit_length %}
+{%- endif %}
+float{{ data.len }} {{ t.name }}
+{%- endif -%}
+{% endmacro %}

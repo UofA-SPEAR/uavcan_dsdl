@@ -41,3 +41,9 @@ Windows or Mac if you want.
 The `out_dir` is optional, nunavut will default to `nunavut_out` if none
 is supplied.
 
+
+## (Experimental) Generating ROS msgs
+
+```
+nnvg --templates ros_templates/ -e msg public_regulated_data_types/uavcan/ --outdir ros
+```
