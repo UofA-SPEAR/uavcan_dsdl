@@ -5,5 +5,11 @@
 
 uint8 thing
 uavcan.node.Heartbeat.1.0 id
+
+# Ensure we'll always fit in a single frame
+@extent 7 * 8
+
 ---
 uint8 response
+
+@extent 7 * 8
