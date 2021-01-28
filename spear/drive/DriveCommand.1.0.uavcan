@@ -3,13 +3,8 @@
 # Meant for non-steerable wheels. If it is meant to support other types,
 # we will version-bump it or add a new definition.
 
-uint8 thing
-uavcan.node.Heartbeat.1.0 id
+float32 speed
+uavcan.node.ID.1.0 id
 
 # Ensure we'll always fit in a single frame
-@extent 7 * 8
-
----
-uint8 response
-
 @extent 7 * 8
