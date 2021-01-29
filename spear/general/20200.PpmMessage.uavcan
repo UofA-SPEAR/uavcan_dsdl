@@ -1,5 +1,0 @@
-#
-# DSDL definitions for ppm inputs
-# No more than 8 channels by spec
-
-int32[<=8] channel_data 

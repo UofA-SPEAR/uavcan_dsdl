@@ -1,9 +1,6 @@
-[submodule "uavcan_dsdl"]
-	path = uavcan_dsdl
-	url = https://github.com/UAVCAN/dsdl.git
-[submodule "libuavcan"]
-	path = libuavcan
-	url = https://github.com/UAVCAN/libuavcan
-[submodule "libcanard"]
-	path = libcanard
-	url = https://github.com/UAVCAN/libcanard.git
+[submodule "public_regulated_data_types"]
+	path = public_regulated_data_types
+	url = https://github.com/UAVCAN/public_regulated_data_types
+[submodule "nunavut"]
+	path = nunavut
+	url = https://github.com/davidlenfesty/nunavut

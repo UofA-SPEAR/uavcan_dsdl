@@ -1,0 +1,10 @@
+# Simple description to control the velocity of a wheel.
+#
+# Meant for non-steerable wheels. If it is meant to support other types,
+# we will version-bump it or add a new definition.
+
+float32 speed
+uavcan.node.ID.1.0 id
+
+# Ensure we'll always fit in a single frame
+@extent 7 * 8

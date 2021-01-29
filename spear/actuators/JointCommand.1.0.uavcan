@@ -1,0 +1,6 @@
+# Not sure what this needs to be in reference to.
+float32 angle
+uavcan.node.ID.1.0 id
+
+# Ensure we'll always fit in a single frame
+@extent 7 * 8
