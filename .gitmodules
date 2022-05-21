@@ -3,7 +3,7 @@
 	url = https://github.com/UAVCAN/dsdl.git
 [submodule "libuavcan"]
 	path = libuavcan
-	url = https://github.com/UAVCAN/libuavcan
+	url = https://github.com/UofA-SPEAR/libuavcan.git
 [submodule "libcanard"]
 	path = libcanard
 	url = https://github.com/UAVCAN/libcanard.git
